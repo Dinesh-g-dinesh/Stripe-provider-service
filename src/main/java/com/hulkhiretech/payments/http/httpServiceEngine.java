@@ -16,14 +16,14 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @RequiredArgsConstructor
 public class httpServiceEngine {
+
     private final RestClient restClient;
-    public String MakeHttpCall(HttpRequest httpRequest){
+    public ResponseEntity<String> MakeHttpCall(HttpRequest httpRequest){
         log.info("Making HTTP call to external payment provider...");
 
          ResponseEntity<String> httpResponse = restClient.method(httpRequest.getMethod())
                 .uri(httpRequest.getUrl())
-                .headers(restClientHttpHeaders ->
-                        restClientHttpHeaders.addAll(httpRequest.getHeaders()))
+                .headers(headers -> headers.addAll(httpRequest.getHeaders()))
                 .body(httpRequest.getRequestData())
                 .retrieve()
                 .toEntity(String.class);
@@ -31,7 +31,7 @@ public class httpServiceEngine {
          log.info("HTTP call completed with status code: {}, Response Body: {}",
                  httpResponse.getStatusCode(), httpResponse);
 
-        return "\n" + httpResponse.getBody();
+        return httpResponse;
     }
 
     @PostConstruct
